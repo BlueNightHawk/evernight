@@ -43,6 +43,7 @@ void CImGuiManager::Draw(SDL_Window* window)
 	// -------------------------
 
 	//ImGui::ShowDemoWindow();
+	DrawVersionString();
 
 	// -------------------------
 
@@ -50,6 +51,26 @@ void CImGuiManager::Draw(SDL_Window* window)
 	ImGui::Render();
 	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 }
+
+void CImGuiManager::DrawVersionString()
+{
+	ImGui::SetNextWindowPos(ImVec2(4, 4), ImGuiCond_Always);
+
+	ImGui::SetNextWindowBgAlpha(0.5f);
+
+	ImGui::Begin("Version Info", 0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoNav);
+	ImFont font = *ImGui::GetFont();
+	font.Scale = 1.2f;
+
+	ImGui::PushFont(&font);
+	ImGui::TextColored(ImVec4(0.9f,0.9f,0.9f,1.0f), "Evernight Build : %s\n", __TIMESTAMP__);
+	ImGui::PopFont();
+
+	ImGui::TextColored(ImVec4(0.9f, 0.9f, 0.9f, 0.8f), "OpenGL %s\n", glGetString(GL_VERSION));
+
+	ImGui::End();
+}
+
 
 //-----------------------------------------------------------------------------
 // ImGui process event for SDL2

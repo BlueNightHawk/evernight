@@ -18,6 +18,8 @@ public:
 	void Init();
 	void InitBackends(SDL_Window* window);
 	void Draw(SDL_Window* window);
+	
+	void DrawVersionString();
 };
 
 int ImGui_ProcessEvent(void* data, SDL_Event* event);

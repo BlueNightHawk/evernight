@@ -174,7 +174,6 @@ void HookSDL2()
 
 	if (ORIG_SDL_CreateWindow)
 	{
-		void* pSDL_CreateWindow = (void*)ORIG_SDL_CreateWindow;
 		funchook_prepare(g_pSdlHook, (void**)&ORIG_SDL_CreateWindow, (void*)HOOKED_SDL_CreateWindow);
 	}
 
@@ -183,9 +182,7 @@ void HookSDL2()
 	{
 		imgui.Init();
 
-		void* pSDL_GL_SwapWindow = (void*)ORIG_SDL_GL_SwapWindow;
-		MH_CreateHook(pSDL_GL_SwapWindow, (void*)HOOKED_SDL_GL_SwapWindow, (void**)&ORIG_SDL_GL_SwapWindow);
-		MH_EnableHook(pSDL_GL_SwapWindow);
+		funchook_prepare(g_pSdlHook, (void**)&ORIG_SDL_GL_SwapWindow, (void*)HOOKED_SDL_GL_SwapWindow);
 
 		SDL_AddEventWatch(ImGui_ProcessEvent, NULL);
 	}
