@@ -111,7 +111,7 @@ const char* sTFClasses[] =
 		"CIVILIAN",
 };
 
-char* sLocalisedClasses[][7] =
+const char* sLocalisedClasses[][7] =
 	{
 		{"#Barney",
 			"#Cleansuit",
@@ -128,7 +128,7 @@ char* sLocalisedClasses[][7] =
 			"#Tower",
 			"#Op4_Random"}};
 
-char* sCTFClassSelection[][7] =
+const char* sCTFClassSelection[][7] =
 	{
 		{"Barney",
 			"Cleansuit",

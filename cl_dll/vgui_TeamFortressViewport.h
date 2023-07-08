@@ -55,9 +55,9 @@ void ScaleColors( int &r, int &g, int &b, int a );
 
 const int StatsTeamsCount = 4;
 
-extern char * sCTFClassSelection[][7];
+extern const char* sCTFClassSelection[][7];
 extern int sTFValidClassInts[];
-extern char *sLocalisedClasses[][7];
+extern const char* sLocalisedClasses[][7];
 extern const char* sLocalisedStatsTeams[StatsTeamsCount];
 extern const char* sCTFStatsSelection[StatsTeamsCount];
 extern int iTeamColors[5][3];

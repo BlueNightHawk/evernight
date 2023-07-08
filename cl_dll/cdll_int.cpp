@@ -36,6 +36,10 @@
 #include "vgui_TeamFortressViewport.h"
 #include "filesystem_utils.h"
 
+#include "PlatformHeaders.h"
+#include "SDL2/SDL.h"
+#include "glad/glad.h"
+
 extern bool g_ResetMousePosition;
 
 cl_enginefunc_t gEngfuncs;
@@ -52,6 +56,14 @@ void CL_UnloadParticleMan();
 void InitInput();
 void EV_HookEvents();
 void IN_Commands();
+
+void R_CacheShadows();
+
+void Mem_Init(void);
+
+void GammaInit(void);
+void GammaUpdate(void);
+
 
 /*
 ================================
@@ -129,6 +141,18 @@ int DLLEXPORT Initialize(cl_enginefunc_t* pEnginefuncs, int iVersion)
 		return 0;
 	}
 
+	Mem_Init();
+	GammaInit();
+	gladLoadGLLoader(SDL_GL_GetProcAddress);
+
+	GLint bStencilBits = 0;
+	glGetIntegerv(GL_STENCIL_BITS, &bStencilBits);
+
+	if (bStencilBits == 0)
+	{
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning", "Please launch the game using the launcher!", nullptr);
+	}
+
 	// get tracker interface, if any
 	return 1;
 }
@@ -154,6 +178,8 @@ int DLLEXPORT HUD_VidInit()
 	gHUD.VidInit();
 
 	VGui_Startup();
+
+	R_CacheShadows();
 
 	// Reset mouse position the first time the engine asks for an update so
 	// movement during map load doesn't impact in-game angles.
@@ -251,6 +277,7 @@ void DLLEXPORT HUD_Frame(double time)
 	//	RecClHudFrame(time);
 
 	GetClientVoiceMgr()->Frame(time);
+	GammaUpdate();
 }
 
 

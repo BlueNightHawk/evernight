@@ -173,7 +173,7 @@ CClassMenuPanel::CClassMenuPanel(int iTrans, bool iRemoveMe, int x, int y, int w
 
 			// Open up the Class Briefing File
 			sprintf(sz, "classes/short_%s.txt", sCTFClassSelection[team][i]);
-			char* cText = "Class Description not available.";
+			const char* cText = "Class Description not available.";
 			char* pfile = (char*)gEngfuncs.COM_LoadFile(sz, 5, NULL);
 			if (pfile)
 			{

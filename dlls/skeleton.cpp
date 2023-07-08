@@ -28,10 +28,10 @@ public:
 	bool KeyValue(KeyValueData* pkvd) override;
 
 	int m_iPose; // which sequence to display	-- temporary, don't need to save
-	static char* m_szPoses[4];
+	static const char* m_szPoses[4];
 };
 
-char* COFSkeleton::m_szPoses[] = {"s_onback", "s_sitting", "dead_against_wall", "dead_stomach"};
+const char* COFSkeleton::m_szPoses[] = {"s_onback", "s_sitting", "dead_against_wall", "dead_stomach"};
 
 bool COFSkeleton::KeyValue(KeyValueData* pkvd)
 {

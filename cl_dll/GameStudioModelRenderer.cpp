@@ -84,6 +84,19 @@ void R_StudioInit()
 	g_StudioRenderer.Init();
 }
 
+/*
+====================
+R_CacheShadows
+
+====================
+*/
+
+void R_CacheShadows()
+{
+	g_StudioRenderer.m_bCacheShadows = true;
+	//	g_StudioRenderer.StudioCacheShadows();
+}
+
 // The simple drawing interface we'll pass back to the engine
 r_studio_interface_t studio =
 	{
@@ -92,7 +105,18 @@ r_studio_interface_t studio =
 		R_StudioDrawPlayer,
 };
 
-/*
+r_studio_interface_t studio_h =
+	{
+		STUDIO_INTERFACE_VERSION,
+		R_StudioDrawModel,
+		R_StudioDrawPlayer,
+};
+
+
+int Hk_GetStudioModelInterface(int version,
+	r_studio_interface_t** ppinterface,
+	engine_studio_api_t* pstudio);
+	/*
 ====================
 HUD_GetStudioModelInterface
 
@@ -107,12 +131,14 @@ int DLLEXPORT HUD_GetStudioModelInterface(int version, struct r_studio_interface
 		return 0;
 
 	// Point the engine to our callbacks
-	*ppinterface = &studio;
+	*ppinterface = &studio_h;
 
-	// Copy in engine helper functions
-	memcpy(&IEngineStudio, pstudio, sizeof(IEngineStudio));
+	memcpy(&IEngineStudio, pstudio, sizeof(engine_studio_api_t));
+
+	Hk_GetStudioModelInterface(version, ppinterface, &IEngineStudio);
 
 	// Initialize local variables, etc.
+	
 	R_StudioInit();
 
 	// Success

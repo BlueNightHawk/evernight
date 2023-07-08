@@ -857,10 +857,10 @@ public:
 	bool KeyValue(KeyValueData* pkvd) override;
 
 	int m_iPose; // which sequence to display	-- temporary, don't need to save
-	static char* m_szPoses[5];
+	static const char* m_szPoses[5];
 };
 
-char* CDeadOtis::m_szPoses[] = {"lying_on_back", "lying_on_side", "lying_on_stomach", "stuffed_in_vent", "dead_sitting"};
+const char* CDeadOtis::m_szPoses[] = {"lying_on_back", "lying_on_side", "lying_on_stomach", "stuffed_in_vent", "dead_sitting"};
 
 bool CDeadOtis::KeyValue(KeyValueData* pkvd)
 {

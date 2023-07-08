@@ -32,6 +32,7 @@ void InterpolateAngles(float* start, float* end, float* output, float frac);
 void NormalizeAngles(float* angles);
 float Distance(const float* v1, const float* v2);
 float AngleBetweenVectors(const float* v1, const float* v2);
+void SetupBuffer();
 
 extern float vJumpOrigin[3];
 extern float vJumpAngles[3];
@@ -89,6 +90,8 @@ cvar_t* cl_bobup;
 cvar_t* cl_waterdist;
 cvar_t* cl_chasedist;
 
+cvar_t* g_cvShadows;
+
 // These cvars are not registered (so users can't cheat), so set the ->value field directly
 // Register these cvars in V_Init() if needed for easy tweaking
 cvar_t v_iyaw_cycle = {"v_iyaw_cycle", "2", 0, 2};
@@ -99,6 +102,9 @@ cvar_t v_iroll_level = {"v_iroll_level", "0.1", 0, 0.1};
 cvar_t v_ipitch_level = {"v_ipitch_level", "0.3", 0, 0.3};
 
 float v_idlescale; // used by TFC for concussion grenade effect
+
+Vector v_vieworg;
+Vector v_viewforward, v_viewright, v_viewup;
 
 //=============================================================================
 /*
@@ -1639,6 +1645,15 @@ void DLLEXPORT V_CalcRefdef(struct ref_params_s* pparams)
 		V_CalcNormalRefdef(pparams);
 	}
 
+	// buz
+	if (g_cvShadows->value)
+		SetupBuffer();
+
+	v_vieworg = pparams->vieworg;
+	v_viewforward = pparams->forward;
+	v_viewright = pparams->right;
+	v_viewup = pparams->up;
+
 	/*
 // Example of how to overlay the whole screen with red at 50 % alpha
 #define SF_TEST
@@ -1708,6 +1723,9 @@ void V_Init()
 	cl_bobup = gEngfuncs.pfnRegisterVariable("cl_bobup", "0.5", 0);
 	cl_waterdist = gEngfuncs.pfnRegisterVariable("cl_waterdist", "4", 0);
 	cl_chasedist = gEngfuncs.pfnRegisterVariable("cl_chasedist", "112", 0);
+
+	// buz
+	g_cvShadows = gEngfuncs.pfnRegisterVariable("gl_shadows", "1", FCVAR_ARCHIVE);
 }
 
 

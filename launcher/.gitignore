@@ -1,0 +1,10 @@
+*.obj
+*.pdb
+
+/.vs
+/projects/.vs
+/launcher/.vs
+/launcher/Debug
+/launcher/Release
+
+

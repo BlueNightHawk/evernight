@@ -1019,13 +1019,14 @@ void ShutdownInput()
 #include "interface.h"
 void CL_UnloadParticleMan();
 
+void Mem_Shutdown(void);
 
 void DLLEXPORT HUD_Shutdown()
 {
 	//	RecClShutdown();
 
 	ShutdownInput();
-
+	Mem_Shutdown();
 
 	FileSystem_FreeFileSystem();
 	CL_UnloadParticleMan();

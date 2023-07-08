@@ -68,7 +68,7 @@ public:
 //=========================================================
 // 3D Vector
 //=========================================================
-class Vector // same data-layout as engine's vec3_t,
+class Vector // same data-layout as engine's Vector,
 {			 //		which is a vec_t[3]
 public:
 	// Construction/destruction
