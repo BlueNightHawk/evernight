@@ -8,9 +8,9 @@
 #define IMGUI_MANAGER_HPP_GUARD
 #pragma once
 
-#include "ImGUI/imgui.h"
-#include "ImGUI/imgui_impl_sdl.h"
-#include "ImGUI/imgui_impl_opengl2.h"
+#include "imgui.h"
+#include "backends/imgui_impl_sdl2.h"
+#include "backends/imgui_impl_opengl2.h"
 
 class CImGuiManager
 {
@@ -20,6 +20,8 @@ public:
 	void Draw(SDL_Window* window);
 	
 	void DrawVersionString();
+
+	void Shutdown();
 };
 
 int ImGui_ProcessEvent(void* data, SDL_Event* event);

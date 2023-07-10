@@ -79,6 +79,18 @@
     <Filter Include="Source Files\cl_dll\mikko_renderer">
       <UniqueIdentifier>{df5d3e7e-2cec-4824-9988-7098f1ae43b7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\cl_dll\imgui">
+      <UniqueIdentifier>{3248d783-18c4-415e-a02d-5b55c7fcdb02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\imgui">
+      <UniqueIdentifier>{e08ab5e3-7154-4021-9fb7-a3e93067865c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\cl_dll\reGS">
+      <UniqueIdentifier>{2e81ead1-9405-47b1-a18e-c9dbce0c8ab8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\cl_dll\waterrenderer">
+      <UniqueIdentifier>{dce37aac-b88d-4804-9cf6-deaf2ed52d67}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\dlls\crossbow.cpp">
@@ -417,6 +429,45 @@
     <ClCompile Include="..\..\cl_dll\tga.cpp">
       <Filter>Source Files\cl_dll\mikko_renderer</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\imgui_lib\imgui\imgui.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\imgui_lib\imgui\imgui_demo.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\imgui_lib\imgui\imgui_draw.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\imgui_lib\imgui\imgui_tables.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\imgui_lib\imgui\imgui_widgets.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\imgui_lib\imgui\backends\imgui_impl_opengl2.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\imgui_lib\imgui\backends\imgui_impl_sdl2.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\imgui_manager.cpp">
+      <Filter>Source Files\cl_dll\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\reGS_main.cpp">
+      <Filter>Source Files\cl_dll\reGS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\hw_view.cpp">
+      <Filter>Source Files\cl_dll\reGS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\vguiwrap.cpp">
+      <Filter>Source Files\cl_dll\reGS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\gl_draw.cpp">
+      <Filter>Source Files\cl_dll\reGS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\waterrenderer.cpp">
+      <Filter>Source Files\cl_dll\waterrenderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\cl_dll\kbutton.h">
@@ -745,6 +796,18 @@
     </ClInclude>
     <ClInclude Include="..\..\cl_dll\gamma.h">
       <Filter>Source Files\cl_dll\mikko_renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\imgui_manager.h">
+      <Filter>Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\reGS_enginehook.h">
+      <Filter>Source Files\cl_dll\reGS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\reGS_patterns.h">
+      <Filter>Source Files\cl_dll\reGS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cl_dll\gl_draw.h">
+      <Filter>Source Files\cl_dll\reGS</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

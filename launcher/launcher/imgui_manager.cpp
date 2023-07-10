@@ -2,9 +2,24 @@
 
 #include "imgui_manager.hpp"
 
+#include <stdio.h>
 #include <Windows.h>
 #include <gl/GL.h>
-#include "SDL2/SDL_opengl.h"
+#include "SDL2/SDL.h"
+
+#include "interface.h"
+
+
+typedef void(*ClientDraw)();
+
+ClientDraw pClientDraw = nullptr;
+CSysModule* pClient = nullptr;
+
+int SCR_DrawFPS(int height);
+
+extern char com_gamedir[256];
+
+ImFont* pUbuntuFont = nullptr;
 
 //-----------------------------------------------------------------------------
 // Initialize ImGui by creating context
@@ -17,6 +32,14 @@ void CImGuiManager::Init()
 	(void)io;
 
 	io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
+
+	char font[256];
+	sprintf(font, "./%s/resource/ubuntu.ttf", com_gamedir);
+
+	pUbuntuFont = io.Fonts->AddFontFromFileTTF(font, 24);
+
+	if (pUbuntuFont)
+		io.FontGlobalScale = 0.7f;
 }
 
 //-----------------------------------------------------------------------------
@@ -35,6 +58,18 @@ void CImGuiManager::InitBackends(SDL_Window* window)
 //-----------------------------------------------------------------------------
 void CImGuiManager::Draw(SDL_Window* window)
 {
+	if (!pClientDraw && !pClient) 
+	{
+		pClient = (CSysModule*)GetModuleHandle("client.dll");
+		if (pClient)
+		{
+			pClientDraw = (ClientDraw)Sys_GetProcAddress(pClient, "UpdateClientImgui");
+		}
+	}
+
+	if (pClientDraw)
+		pClientDraw();
+
 	ImGui_ImplOpenGL2_NewFrame();
 	ImGui_ImplSDL2_NewFrame(window);
 	ImGui::NewFrame();
@@ -60,17 +95,86 @@ void CImGuiManager::DrawVersionString()
 
 	ImGui::Begin("Version Info", 0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoNav);
 	ImFont font = *ImGui::GetFont();
-	font.Scale = 1.2f;
+	font.Scale = 1.6f;
 
+	ImGui::PushFont(&font);
+	ImGui::TextColored(ImVec4(0.0f, 0.9f, 0.0f, 0.8f), "%4i FPS\n", SCR_DrawFPS(0));
+	ImGui::PopFont();
+
+	font.Scale = 1.2f;
 	ImGui::PushFont(&font);
 	ImGui::TextColored(ImVec4(0.9f,0.9f,0.9f,1.0f), "Evernight Build : %s\n", __TIMESTAMP__);
 	ImGui::PopFont();
 
 	ImGui::TextColored(ImVec4(0.9f, 0.9f, 0.9f, 0.8f), "OpenGL %s\n", glGetString(GL_VERSION));
 
+
+
 	ImGui::End();
 }
 
+/*
+================
+Sys_DoubleTime
+================
+*/
+double Sys_DoubleTime(void)
+{
+	static LARGE_INTEGER g_PerformanceFrequency;
+	static LARGE_INTEGER g_ClockStart;
+	LARGE_INTEGER CurrentTime;
+
+	if (!g_PerformanceFrequency.QuadPart)
+	{
+		QueryPerformanceFrequency(&g_PerformanceFrequency);
+		QueryPerformanceCounter(&g_ClockStart);
+	}
+	QueryPerformanceCounter(&CurrentTime);
+
+	return (double)(CurrentTime.QuadPart - g_ClockStart.QuadPart) / (double)(g_PerformanceFrequency.QuadPart);
+}
+
+
+/*
+==============
+SCR_DrawFPS
+==============
+*/
+int SCR_DrawFPS(int height)
+{
+	double calc;
+	double newtime;
+	static double nexttime = 0, lasttime = 0;
+	static double framerate = 0;
+	static int framecount = 0;
+
+	newtime = Sys_DoubleTime();
+	if (newtime >= nexttime)
+	{
+		framerate = framecount / (newtime - lasttime);
+		lasttime = newtime;
+		nexttime = max(nexttime + 1.0, lasttime - 1.0);
+		framecount = 0;
+	}
+
+	calc = framerate;
+	framecount++;
+
+	return (int)(calc + 0.5f);
+}
+
+
+void CImGuiManager::Shutdown()
+{
+	pClient = nullptr;
+	pClientDraw = nullptr;
+
+	ImGui_ImplOpenGL2_Shutdown();
+	ImGui_ImplSDL2_Shutdown();
+
+	ImGui::DestroyContext();
+	SDL_DelEventWatch(ImGui_ProcessEvent, NULL);
+}
 
 //-----------------------------------------------------------------------------
 // ImGui process event for SDL2

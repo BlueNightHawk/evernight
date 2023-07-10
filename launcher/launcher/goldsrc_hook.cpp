@@ -1,7 +1,8 @@
 #include "goldsrc_hook.h"
 
+#include <stdio.h>
+#include <Windows.h>
 #include "funchook.h"
-#include "Utils.hpp"
 
 #include "imgui_manager.hpp"
 
@@ -191,11 +192,17 @@ void HookSDL2()
 	funchook_install(g_pSdlHook,0);
 }
 
+void ImGui_Shutdown()
+{
+	imgui.Shutdown();
+}
+
 //-----------------------------------------------------------------------------
 // Hook hw.dll
 //-----------------------------------------------------------------------------
 void HookEngine()
 {
+#if 0
 	void* handle;
 	void* base;
 	size_t size;
@@ -208,4 +215,5 @@ void HookEngine()
 
 	Utils utils = Utils::Utils(handle, base, size);
 	printf("[hl.exe] Hooked hw.dll!\n");
+#endif	
 }

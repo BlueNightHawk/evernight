@@ -20,6 +20,8 @@
 #include "hltv.h"
 #include "Exports.h"
 
+ref_params_s g_refparams;
+
 int CL_IsThirdPerson();
 void CL_CameraOffset(float* ofs);
 
@@ -62,7 +64,6 @@ extern cvar_t *scr_ofsx, *scr_ofsy, *scr_ofsz;
 extern cvar_t* cl_vsmoothing;
 extern cvar_t* cl_rollangle;
 extern cvar_t* cl_rollspeed;
-extern cvar_t* cl_bobtilt;
 
 #define CAM_MODE_RELAX 1
 #define CAM_MODE_FOCUS 2
@@ -164,13 +165,18 @@ void V_InterpolateAngles( float *start, float *end, float *output, float frac )
 	V_NormalizeAngles( output );
 } */
 
-// Quakeworld bob code, this fixes jitters in the mutliplayer since the clock (pparams->time) isn't quite linear
-float V_CalcBob(struct ref_params_s* pparams)
+enum calcBobMode_t
 {
-	static double bobtime = 0;
-	static float bob = 0;
+	VB_COS,
+	VB_SIN,
+	VB_COS2,
+	VB_SIN2
+};
+
+// Quakeworld bob code, this fixes jitters in the mutliplayer since the clock (pparams->time) isn't quite linear
+void V_CalcBob(struct ref_params_s* pparams, float freqmod, calcBobMode_t mode, double& bobtime, float& bob, float& lasttime)
+{
 	float cycle;
-	static float lasttime = 0;
 	Vector vel;
 
 
@@ -178,14 +184,13 @@ float V_CalcBob(struct ref_params_s* pparams)
 		pparams->time == lasttime)
 	{
 		// just use old value
-		return bob;
+		return; // bob;
 	}
 
 	lasttime = pparams->time;
 
-	//TODO: bobtime will eventually become a value so large that it will no longer behave properly.
-	//Consider resetting the variable if a level change is detected (pparams->time < lasttime might do the trick).
-	bobtime += pparams->frametime;
+	bobtime += pparams->frametime * freqmod;
+
 	cycle = bobtime - (int)(bobtime / cl_bobcycle->value) * cl_bobcycle->value;
 	cycle /= cl_bobcycle->value;
 
@@ -203,13 +208,21 @@ float V_CalcBob(struct ref_params_s* pparams)
 	VectorCopy(pparams->simvel, vel);
 	vel[2] = 0;
 
-	bob = sqrt(vel[0] * vel[0] + vel[1] * vel[1]) * cl_bob->value;
-	bob = bob * 0.3 + bob * 0.7 * sin(cycle);
+    bob = sqrt(vel[0] * vel[0] + vel[1] * vel[1]) * cl_bob->value;
+
+	if (mode == VB_SIN)
+		bob = bob * 0.3 + bob * 0.7 * sin(cycle);
+	else if (mode == VB_COS)
+		bob = bob * 0.3 + bob * 0.7 * cos(cycle);
+	else if (mode == VB_SIN2)
+		bob = bob * 0.3 + bob * 0.7 * sin(cycle) * sin(cycle);
+	else if (mode == VB_COS2)
+		bob = bob * 0.3 + bob * 0.7 * cos(cycle) * cos(cycle);
+
 	bob = V_min(bob, 4);
 	bob = V_max(bob, -7);
-	return bob;
+	// return bob;
 }
-
 /*
 ===============
 V_CalcRoll
@@ -406,18 +419,18 @@ V_CalcViewRoll
 Roll is induced by movement and damage
 ==============
 */
-void V_CalcViewRoll(struct ref_params_s* pparams)
+void V_CalcViewRoll(struct ref_params_s* pparams, cl_entity_t *view)
 {
-	float side;
+	static float side = 0.0f;
 	cl_entity_t* viewentity;
 
 	viewentity = gEngfuncs.GetEntityByIndex(pparams->viewentity);
 	if (!viewentity)
 		return;
 
-	side = V_CalcRoll(viewentity->angles, pparams->simvel, cl_rollangle->value, cl_rollspeed->value);
+	side = std::lerp(side, V_CalcRoll(viewentity->angles, pparams->simvel, cl_rollangle->value, cl_rollspeed->value), pparams->frametime * 5.5f);
 
-	pparams->viewangles[ROLL] += side;
+	view->angles[ROLL] += side * 1.5f;
 
 	if (pparams->health <= 0 && (pparams->viewheight[2] != 0))
 	{
@@ -471,6 +484,47 @@ void V_CalcIntermissionRefdef(struct ref_params_s* pparams)
 	v_angles = pparams->viewangles;
 }
 
+void V_ViewLag(struct ref_params_s *pparams, cl_entity_t *view)
+{
+	// magic nipples - view lag
+	float mouseX = gHUD.mouse_x * 0.045;
+	float mouseY = gHUD.mouse_y * 0.045;
+	float mouseZ = gHUD.mouse_x * 0.02;
+	float frameadj = (1.0f / pparams->frametime) * 0.01;
+
+	if (fabs(pparams->viewangles[0]) >= 87)
+		mouseY = 0;
+
+	gHUD.lagangle_x = std::lerp(gHUD.lagangle_x, mouseX * frameadj, pparams->frametime * 4);
+	if (gHUD.lagangle_x >= 15)
+		gHUD.lagangle_x = 15;
+	if (gHUD.lagangle_x <= -15)
+		gHUD.lagangle_x = -15; // caps model from swaying too far
+	view->angles[1] += gHUD.lagangle_x;
+
+	gHUD.lagangle_z = std::lerp(gHUD.lagangle_z, mouseZ * frameadj, pparams->frametime * 4);
+	if (gHUD.lagangle_z >= 8)
+		gHUD.lagangle_z = 8;
+	if (gHUD.lagangle_z <= -8)
+		gHUD.lagangle_z = -8;
+	view->angles[2] += gHUD.lagangle_z;
+
+	gHUD.lagangle_y = std::lerp(gHUD.lagangle_y, mouseY * frameadj, pparams->frametime * 4);
+	if (gHUD.lagangle_y >= 15)
+		gHUD.lagangle_y = 15;
+	if (gHUD.lagangle_y <= -15)
+		gHUD.lagangle_y = -15; // caps model from swaying too far
+	view->angles[0] += gHUD.lagangle_y;
+
+	// this moves the weapon origin left/right, up/down based on input (very similar to the hl2 weapon lag)
+	for (int i = 0; i < 3; i++)
+	{
+		view->origin[i] += 0.2 * gHUD.lagangle_x * pparams->right[i];
+		view->origin[i] -= 0.2 * gHUD.lagangle_y * pparams->up[i];
+	}
+	// END
+}
+
 #define ORIGIN_BACKUP 64
 #define ORIGIN_MASK (ORIGIN_BACKUP - 1)
 
@@ -497,8 +551,12 @@ void V_CalcNormalRefdef(struct ref_params_s* pparams)
 	cl_entity_t *ent, *view;
 	int i;
 	Vector angles;
-	float bob, waterOffset;
+	float waterOffset;
+	float bobRight = 0, bobUp = 0;
 	static viewinterp_t ViewInterp;
+
+	static double bobtimes[2] = {0, 0};
+	static float lasttimes[2] = {0, 0};
 
 	static float oldz = 0;
 	static float lasttime;
@@ -523,11 +581,13 @@ void V_CalcNormalRefdef(struct ref_params_s* pparams)
 
 	// transform the view offset by the model's matrix to get the offset from
 	// model origin for the view
-	bob = V_CalcBob(pparams);
+	// transform the view offset by the model's matrix to get the offset from
+	// model origin for the view
+	V_CalcBob(pparams, 0.75f, VB_SIN, bobtimes[0], bobRight, lasttimes[0]);	  // right
+	V_CalcBob(pparams, 1.50f, VB_SIN, bobtimes[1], bobUp, lasttimes[1]);	  // up
 
 	// refresh position
 	VectorCopy(pparams->simorg, pparams->vieworg);
-	pparams->vieworg[2] += (bob);
 	VectorAdd(pparams->vieworg, pparams->viewheight, pparams->vieworg);
 
 	VectorCopy(pparams->cl_viewangles, pparams->viewangles);
@@ -604,8 +664,6 @@ void V_CalcNormalRefdef(struct ref_params_s* pparams)
 
 	pparams->vieworg[2] += waterOffset;
 
-	V_CalcViewRoll(pparams);
-
 	V_AddIdle(pparams);
 
 	// offsets
@@ -622,9 +680,9 @@ void V_CalcNormalRefdef(struct ref_params_s* pparams)
 		}
 	}
 
-	// Treating cam_ofs[2] as the distance
-	if (0 != CL_IsThirdPerson())
 	{
+		static Vector l_ofs;
+
 		Vector ofs;
 
 		ofs[0] = ofs[1] = ofs[2] = 0.0;
@@ -635,13 +693,25 @@ void V_CalcNormalRefdef(struct ref_params_s* pparams)
 		camAngles[ROLL] = 0;
 
 		AngleVectors(camAngles, camForward, camRight, camUp);
-
-		for (i = 0; i < 3; i++)
+		// Treating cam_ofs[2] as the distance
+		if (0 != CL_IsThirdPerson())
 		{
-			pparams->vieworg[i] += -ofs[2] * camForward[i];
+			for (i = 0; i < 3; i++)
+			{
+			//	l_ofs[i] = std::lerp(l_ofs[i], ofs[i], pparams->frametime * 17.0f);
+				l_ofs[i] = ofs[i];
+				pparams->vieworg[i] += -l_ofs[2] * camForward[i];
+			}
+		}
+		else
+		{
+			for (i = 0; i < 3; i++)
+			{
+		//		l_ofs[i] = std::lerp(l_ofs[i], 0, pparams->frametime * 17.0f);
+		//		pparams->vieworg[i] += -l_ofs[2] * camForward[i];
+			}
 		}
 	}
-
 	// Give gun our viewangles
 	VectorCopy(pparams->cl_viewangles, view->angles);
 
@@ -658,19 +728,21 @@ void V_CalcNormalRefdef(struct ref_params_s* pparams)
 
 	for (i = 0; i < 3; i++)
 	{
-		view->origin[i] += bob * 0.4 * pparams->forward[i];
+		view->origin[i] += bobRight * 0.23 * pparams->right[i];
+		view->origin[i] += bobUp * 0.17 * pparams->up[i];
 	}
-	view->origin[2] += bob;
 
-	// throw in a little tilt.
-	view->angles[YAW] -= bob * 0.5;
-	view->angles[ROLL] -= bob * 1;
-	view->angles[PITCH] -= bob * 0.3;
+	view->angles[0] -= bobUp * 0.7;
+	view->angles[1] -= bobRight * 0.4;
 
-	if (0 != cl_bobtilt->value)
-	{
-		VectorCopy(view->angles, view->curstate.angles);
-	}
+	pparams->viewangles[0] += (bobUp + bobRight) * 0.05f;
+	pparams->viewangles[1] += bobRight * 0.05f;
+
+	V_ViewLag(pparams, view);
+
+	V_CalcViewRoll(pparams, view);
+
+	VectorCopy(view->angles, view->curstate.angles);
 
 	// pushing the view origin down off of the same X/Z plane as the ent's origin will give the
 	// gun a very nice 'shifting' effect when the player looks up/down. If there is a problem
@@ -1653,6 +1725,8 @@ void DLLEXPORT V_CalcRefdef(struct ref_params_s* pparams)
 	v_viewforward = pparams->forward;
 	v_viewright = pparams->right;
 	v_viewup = pparams->up;
+
+	g_refparams = *pparams;
 
 	/*
 // Example of how to overlay the whole screen with red at 50 % alpha

@@ -1017,9 +1017,13 @@ void ShutdownInput()
 }
 
 #include "interface.h"
+#include "imgui_manager.h"
+
 void CL_UnloadParticleMan();
 
 void Mem_Shutdown(void);
+
+void HWUnHook();
 
 void DLLEXPORT HUD_Shutdown()
 {
@@ -1027,6 +1031,10 @@ void DLLEXPORT HUD_Shutdown()
 
 	ShutdownInput();
 	Mem_Shutdown();
+
+	g_ImGui.Shutdown();
+
+	HWUnHook();
 
 	FileSystem_FreeFileSystem();
 	CL_UnloadParticleMan();

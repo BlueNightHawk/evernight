@@ -2288,11 +2288,6 @@ void CStudioModelRenderer::StudioCacheShadows()
 	m_bCacheShadows = false;
 }
 
-#include <fstream>
-#include <iostream>
-
-using namespace std;
-
 //====================
 // StudioLoadData
 //

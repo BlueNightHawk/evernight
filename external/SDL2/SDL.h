@@ -150,6 +150,33 @@ extern DECLSPEC Uint32 SDLCALL SDL_WasInit(Uint32 flags);
  */
 extern DECLSPEC void SDLCALL SDL_Quit(void);
 
+inline DECLSPEC void SDLCALL SDL_GL_GetDrawableSize(SDL_Window* window, int* w, int* h)
+{
+	SDL_GetWindowSize(window, w, h);
+}
+
+inline DECLSPEC Uint32 SDLCALL SDL_GetGlobalMouseState(int* x, int* y)
+{
+	Uint32 result;
+	int window_x, window_y, mouse_x_global, mouse_y_global;
+	result = SDL_GetMouseState(&mouse_x_global, &mouse_y_global);
+	SDL_GetWindowPosition(SDL_GetWindowFromID(1), &window_x, &window_y);
+
+	mouse_x_global += window_x;
+	mouse_y_global += window_y;
+
+	*x = mouse_x_global;
+	*y = mouse_y_global;
+
+	return result;
+}
+
+inline DECLSPEC int SDLCALL SDL_GetRendererOutputSize(SDL_Renderer* renderer, int* w, int* h)
+{
+	SDL_GetWindowSize(SDL_GetWindowFromID(1), w, h);
+	return 1;
+}
+
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus
 /* *INDENT-OFF* */

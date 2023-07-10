@@ -40,6 +40,10 @@
 #include "SDL2/SDL.h"
 #include "glad/glad.h"
 
+#include "imgui_manager.h"
+
+bool HWHook();
+
 extern bool g_ResetMousePosition;
 
 cl_enginefunc_t gEngfuncs;
@@ -64,6 +68,10 @@ void Mem_Init(void);
 void GammaInit(void);
 void GammaUpdate(void);
 
+
+void Init_WaterRenderer();
+void VidInit_WaterRenderer();
+void Draw_WaterRenderer();
 
 /*
 ================================
@@ -153,6 +161,8 @@ int DLLEXPORT Initialize(cl_enginefunc_t* pEnginefuncs, int iVersion)
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning", "Please launch the game using the launcher!", nullptr);
 	}
 
+	g_ImGui.Init();
+
 	// get tracker interface, if any
 	return 1;
 }
@@ -185,6 +195,8 @@ int DLLEXPORT HUD_VidInit()
 	// movement during map load doesn't impact in-game angles.
 	g_ResetMousePosition = true;
 
+	VidInit_WaterRenderer();
+
 	return 1;
 }
 
@@ -205,6 +217,9 @@ void DLLEXPORT HUD_Init()
 
 	gHUD.Init();
 	Scheme_Init();
+
+	HWHook();
+	Init_WaterRenderer();
 }
 
 
@@ -221,7 +236,11 @@ int DLLEXPORT HUD_Redraw(float time, int intermission)
 {
 	//	RecClHudRedraw(time, intermission);
 
+	Draw_WaterRenderer();
+
+	glDepthRange(0.0f, 0.0f);
 	gHUD.Redraw(time, 0 != intermission);
+	glDepthRange(0.0f, 1.0f);
 
 	return 1;
 }

@@ -754,6 +754,10 @@ public:
 		g = 255;
 		b = 255;
 	}
+
+	int mouse_x = 0, mouse_y = 0;
+
+	float lagangle_x = 0.0f, lagangle_y = 0.0f, lagangle_z = 0.0f;
 };
 
 extern CHud gHUD;

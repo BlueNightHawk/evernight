@@ -16,6 +16,9 @@
 #include "in_defs.h"
 #include "Exports.h"
 
+#include "pmtrace.h"
+#include "pm_defs.h"
+
 #include "SDL2/SDL_mouse.h"
 
 float CL_KeyState(kbutton_t* key);
@@ -149,15 +152,22 @@ typedef struct
 
 extern trace_t SV_ClipMoveToEntity(edict_t* ent, Vector start, Vector mins, Vector maxs, Vector end);
 
+void V_SmoothInterpolateAngles(float* startAngle, float* endAngle, float* finalAngle, float degreesPerSec);
+
+extern ref_params_s g_refparams;
+
+
+#define LATER
+
 void DLLEXPORT CAM_Think()
 {
 	//	RecClCamThink();
 
 	Vector origin;
 	Vector ext, pnt, camForward, camRight, camUp;
-	moveclip_t clip;
+	pmtrace_s clip;
 	float dist;
-	Vector camAngles;
+	static Vector camAngles;
 	float flSensitivity;
 #ifdef LATER
 	int i;
@@ -185,7 +195,7 @@ void DLLEXPORT CAM_Think()
 #ifdef LATER
 	if (cam_contain->value)
 	{
-		gEngfuncs.GetClientOrigin(origin);
+		origin = gEngfuncs.GetLocalPlayer()->origin;
 		ext[0] = ext[1] = ext[2] = 0.0;
 	}
 #endif
@@ -341,9 +351,8 @@ void DLLEXPORT CAM_Think()
 			pnt[i] += -dist * camForward[i];
 
 		// check line from r_refdef.vieworg to pnt
-		memset(&clip, 0, sizeof(moveclip_t));
-		clip.trace = SV_ClipMoveToEntity(sv.edicts, r_refdef.vieworg, ext, ext, pnt);
-		if (clip.trace.fraction == 1.0)
+		clip = *gEngfuncs.PM_TraceLine(g_refparams.vieworg, pnt, 0, 2, -1);
+		if (clip.fraction == 1.0)
 		{
 			// update ideal
 			cam_idealpitch->value = camAngles[PITCH];
@@ -396,14 +405,14 @@ void DLLEXPORT CAM_Think()
 		for (i = 0; i < 3; i++)
 			pnt[i] += -dist * camForward[i];
 
-		// check line from r_refdef.vieworg to pnt
-		memset(&clip, 0, sizeof(moveclip_t));
-		ext[0] = ext[1] = ext[2] = 0.0;
-		clip.trace = SV_ClipMoveToEntity(sv.edicts, r_refdef.vieworg, ext, ext, pnt);
-		if (clip.trace.fraction != 1.0)
-			return;
+		clip = *gEngfuncs.PM_TraceLine(g_refparams.vieworg, pnt, 0, 2, -1);
+		if (clip.fraction != 1.0)
+		{
+			dist = (Vector(g_refparams.vieworg) - pnt).Length() * 0.7f;
+		}
 	}
 #endif
+
 	cam_ofs[0] = camAngles[0];
 	cam_ofs[1] = camAngles[1];
 	cam_ofs[2] = dist;

@@ -687,12 +687,13 @@ void CScientist::Spawn()
 void CScientist::Precache()
 {
 	PRECACHE_MODEL("models/scientist.mdl");
-	PRECACHE_SOUND("scientist/sci_pain1.wav");
-	PRECACHE_SOUND("scientist/sci_pain2.wav");
-	PRECACHE_SOUND("scientist/sci_pain3.wav");
-	PRECACHE_SOUND("scientist/sci_pain4.wav");
-	PRECACHE_SOUND("scientist/sci_pain5.wav");
 
+	for (int i = 1; i < 6; i++)
+	{
+		int sound = ALLOC_STRING(UTIL_VarArgs("scientist/sci_pain%i.wav", i));
+		PRECACHE_SOUND(STRING(sound));
+	}
+#
 	// every new scientist must call this, otherwise
 	// when a level is loaded, nobody will talk (time is reset to 0)
 	TalkInit();

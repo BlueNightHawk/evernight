@@ -16,6 +16,9 @@ typedef Vector myVector;
 
 #include "PlatformHeaders.h"
 #include "SDL2/SDL.h"
+
+#undef __cpp_lib_byte
+
 #include "glad/glad.h"
 #include "glext.h"
 

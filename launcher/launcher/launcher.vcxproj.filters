@@ -9,9 +9,6 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="SPTLib">
-      <UniqueIdentifier>{9c04f316-a40c-40b5-875b-1561d34ef8ee}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Headers">
       <UniqueIdentifier>{aca49dda-024e-4778-b15f-35c5b5b5c24d}</UniqueIdentifier>
     </Filter>
@@ -32,38 +29,35 @@
     <ClCompile Include="..\common\CCommandLine.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\SPTLib\DetoursUtils.cpp">
-      <Filter>SPTLib</Filter>
-    </ClCompile>
     <ClCompile Include="goldsrc_hook.cpp">
       <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\external\ImGUI\imgui.cpp">
-      <Filter>ImGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\external\ImGUI\imgui_demo.cpp">
-      <Filter>ImGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\external\ImGUI\imgui_draw.cpp">
-      <Filter>ImGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\external\ImGUI\imgui_impl_sdl.cpp">
-      <Filter>ImGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\external\ImGUI\imgui_impl_opengl2.cpp">
-      <Filter>ImGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\external\ImGUI\imgui_tables.cpp">
-      <Filter>ImGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\external\ImGUI\imgui_widgets.cpp">
-      <Filter>ImGUI</Filter>
     </ClCompile>
     <ClCompile Include="imgui_manager.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="plugins_loader.cpp">
       <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\imgui_lib\imgui\imgui.cpp">
+      <Filter>ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\imgui_lib\imgui\imgui_demo.cpp">
+      <Filter>ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\imgui_lib\imgui\imgui_draw.cpp">
+      <Filter>ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\imgui_lib\imgui\imgui_tables.cpp">
+      <Filter>ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\imgui_lib\imgui\imgui_widgets.cpp">
+      <Filter>ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\imgui_lib\imgui\backends\imgui_impl_opengl2.cpp">
+      <Filter>ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\imgui_lib\imgui\backends\imgui_impl_sdl2.cpp">
+      <Filter>ImGUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -80,50 +74,11 @@
     <ClInclude Include="resource.h">
       <Filter>Resources</Filter>
     </ClInclude>
-    <ClInclude Include="..\external\SPTLib\DetoursUtils.hpp">
-      <Filter>SPTLib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\external\SPTLib\patterns.hpp">
-      <Filter>SPTLib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\external\SPTLib\patterns_macros.hpp">
-      <Filter>SPTLib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\external\SPTLib\sptlib-stdafx.hpp">
-      <Filter>SPTLib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\external\SPTLib\Utils.hpp">
-      <Filter>SPTLib</Filter>
-    </ClInclude>
     <ClInclude Include="goldsrc_hook.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="goldsrc_patterns.hpp">
       <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\external\ImGUI\imconfig.h">
-      <Filter>ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\external\ImGUI\imgui.h">
-      <Filter>ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\external\ImGUI\imgui_impl_sdl.h">
-      <Filter>ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\external\ImGUI\imgui_internal.h">
-      <Filter>ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\external\ImGUI\imgui_impl_opengl2.h">
-      <Filter>ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\external\ImGUI\imstb_rectpack.h">
-      <Filter>ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\external\ImGUI\imstb_textedit.h">
-      <Filter>ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\external\ImGUI\imstb_truetype.h">
-      <Filter>ImGUI</Filter>
     </ClInclude>
     <ClInclude Include="imgui_manager.hpp">
       <Filter>Headers</Filter>

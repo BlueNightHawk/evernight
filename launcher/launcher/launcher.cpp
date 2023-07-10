@@ -24,7 +24,11 @@ extern funchook *g_pSdlHook;
 #define HARDWARE_ENGINE "hw.dll"
 #define SOFTWARE_ENGINE "sw.dll"
 
+char com_gamedir[256];
+
 IFileSystem* g_pFileSystem = nullptr;
+
+void ImGui_Shutdown();
 
 // shut up compiler
 #define stricmp _stricmp
@@ -210,6 +214,8 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		cmdline->SetParm("-game", "evernight");
 	}
 
+	strcpy(com_gamedir, cmdline->CheckParm("-game", nullptr) + 6);
+
 	// breaks stencil buffer if enabled
 	cmdline->SetParm("-nofbo", 0);
 
@@ -363,6 +369,8 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 		funchook_uninstall(g_pSdlHook, 0);
 		funchook_destroy(g_pSdlHook);
+
+		ImGui_Shutdown();
 
 	} while (bRestartEngine);
 

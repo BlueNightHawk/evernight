@@ -594,6 +594,9 @@ void IN_MouseMove(float frametime, usercmd_t* cmd)
 			}
 		}
 
+		gHUD.mouse_x = mouse_x;
+		gHUD.mouse_y = mouse_y;
+
 		// if the mouse has moved, force it to the center, so there's room to move
 		if (0 != pos.x || 0 != pos.y)
 		{
